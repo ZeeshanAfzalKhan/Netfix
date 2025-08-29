@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import Login from './Login'
+import Auth from './Auth'
 import Browse from './Browse'
 import Slash from './Slash';
 
@@ -11,7 +11,11 @@ const Body = () => {
         },
         {
             path: "/login",
-            element: <Login />,
+            element: <Auth mode={"signin"} />,
+        },
+        {
+            path: "/signup",
+            element: <Auth mode={"signup"} />,
         },
         {
             path: "/browse",

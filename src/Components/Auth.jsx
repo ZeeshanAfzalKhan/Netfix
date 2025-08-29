@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-const Login = () => {
-  const [isSignIn, setIsSignIn] = useState(true);
+const Auth = ( { mode } ) => {
+  const [isSignIn, setIsSignIn] = useState(mode === "signin");
 
   return (
     <div className='w-full h-[150vh] flex justify-center bg-[url("https://assets.nflxext.com/ffe/siteui/vlv3/cb72daa5-bd8d-408b-b949-1eaef000c377/web/IN-en-20250825-TRIFECTA-perspective_a3209894-0b01-4ddb-b57e-f32165e20a3f_large.jpg")] bg-cover'>
@@ -73,4 +73,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Auth;
