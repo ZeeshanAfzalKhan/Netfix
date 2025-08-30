@@ -1,69 +1,69 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
+import { validateSignIn, validateSignUp } from "../utils/validate";
+import FloatingInput from "./FloatingInput";
 
-const Auth = ( { mode } ) => {
-  const [isSignIn, setIsSignIn] = useState(mode === "signin");
+const Auth = ({ mode }) => {
+  const isSignIn = mode === "signin";
+  const [errors, setErrors] = useState({});
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const authData = { email, password, ...(isSignIn ? {} : { fullName }) };
+
+    const errors = isSignIn
+      ? validateSignIn(email, password)
+      : validateSignUp(email, password, fullName);
+
+    if (Object.keys(errors).length > 0) {
+      console.log("Validation Errors:", errors);
+      setErrors(errors);
+      return;
+    }
+
+    console.log("Form submitted successfully with data:");
+
+    console.log(authData);
+
+    setErrors({});
+
+    setEmail("");
+    setPassword("");
+    setFullName("")
+  };
 
   return (
-    <div className='w-full h-[150vh] flex justify-center bg-[url("https://assets.nflxext.com/ffe/siteui/vlv3/cb72daa5-bd8d-408b-b949-1eaef000c377/web/IN-en-20250825-TRIFECTA-perspective_a3209894-0b01-4ddb-b57e-f32165e20a3f_large.jpg")] bg-cover'>
-      <form className="w-4/12 h-6/12 bg-black/85 flex flex-col p-8 mt-28 mx-auto rounded-sm">
+    <div className='w-full h-[700px] flex justify-center bg-[url("https://assets.nflxext.com/ffe/siteui/vlv3/cb72daa5-bd8d-408b-b949-1eaef000c377/web/IN-en-20250825-TRIFECTA-perspective_a3209894-0b01-4ddb-b57e-f32165e20a3f_large.jpg")] bg-cover'>
+      <form
+        onSubmit={handleSubmit}
+        className="w-4/12 h-[500px] bg-black/85 flex flex-col p-8 mt-28 mx-auto rounded-sm"
+      >
         <div className="text-white text-3xl font-bold mb-6">
           {isSignIn ? "Sign In" : "Sign Up"}
         </div>
-        <div className="relative w-full">
-          <input
-            type="email"
-            placeholder="Email or Mobile number"
-            className="peer w-full p-4 text-white bg-transparent rounded-sm ring-1 ring-gray-50 focus:ring-2 focus:ring-gray-200 placeholder-transparent focus:outline-none mb-6"
-          />
-          <label
-            htmlFor="email"
-            className="absolute pointer-events-none left-4 top-4 text-gray-400 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-sm peer-focus:text-gray-400"
-          >
-            Email or Mobile number
-          </label>
-        </div>
+        <FloatingInput type={"email"} value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} label={"Email or Mobile Number"} />
+        
 
-        {
-          !isSignIn && (
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="peer w-full p-4 text-white bg-transparent rounded-sm ring-1 ring-gray-50 focus:ring-2 focus:ring-gray-200 placeholder-transparent focus:outline-none mb-6" />
-              <label
-                htmlFor="fullname"
-                className="absolute pointer-events-none left-4 top-4 text-gray-400 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-sm peer-focus:text-gray-400"
-              >
-                Full Name
-              </label>
-            </div>
-          )
-        }
+        {!isSignIn && (
+          <FloatingInput type={"text"} value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} label={"Full Name"} />
+        )}
 
-        <div className="relative w-full">
-          <input
-            type="password"
-            placeholder="Password"
-            className="peer w-full p-4 text-white bg-transparent rounded-sm ring-1 ring-gray-50 focus:ring-2 focus:ring-gray-200 placeholder-transparent focus:outline-none mb-6"
-          />
-          <label
-            htmlFor="password"
-            className="absolute pointer-events-none left-4 top-4 text-gray-400 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-sm peer-focus:text-gray-400"
-          >
-            Password
-          </label>
-        </div>
-        {
+        <FloatingInput type={"password"} value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} label={"Password"} />
 
-        }
-        <button className="bg-red-600 p-2 text-white rounded-sm font-semibold text-xl">
+        <button className="bg-red-600 p-2 text-white rounded-sm font-semibold text-xl cursor-pointer hover:bg-red-700 transition-colors">
           {isSignIn ? "Sign In" : "Sign Up"}
         </button>
         <p className="text-gray-400 mt-6">
           {isSignIn ? "New to Netflix?" : "Already have an account?"}{" "}
           <span
             className="text-white hover:underline cursor-pointer"
-            onClick={() => setIsSignIn(!isSignIn)}
+            onClick={() => navigate(isSignIn ? "/signup" : "/login")}
           >
             {isSignIn ? "Sign up now." : "Sign in now."}
           </span>

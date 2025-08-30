@@ -1,6 +1,8 @@
-import React from "react";
+import  { useState } from "react";
 
 const Slash = () => {
+  const [email, setEmail] = useState("");
+
   return (
     <div className='w-full h-[150vh] bg-[url("https://assets.nflxext.com/ffe/siteui/vlv3/cb72daa5-bd8d-408b-b949-1eaef000c377/web/IN-en-20250825-TRIFECTA-perspective_a3209894-0b01-4ddb-b57e-f32165e20a3f_large.jpg")] bg-cover flex justify-center items-center '>
       <div className="w-full h-full bg-black/70 flex justify-center mt-40">
@@ -20,15 +22,20 @@ const Slash = () => {
               <input
                 type="text"
                 id="email"
-                placeholder=" "
+                placeholder="Email address"
                 className="peer p-4 w-80 text-white bg-transparent rounded-sm ring-1 ring-gray-50 
                  focus:ring-2 focus:ring-gray-200 focus:outline-none placeholder-transparent"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <label
                 htmlFor="email"
-                className="absolute pointer-events-none left-4 top-4 text-gray-400 transition-all
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base
-                 peer-focus:top-1 peer-focus:text-sm peer-focus:text-gray-400"
+                className={`absolute left-4 transition-all pointer-events-none
+              ${
+                email
+                  ? "top-1 text-sm text-gray-400"
+                  : "top-4 text-base text-gray-400 peer-focus:top-1 peer-focus:text-sm peer-focus:text-gray-400"
+              }`}
               >
                 Email address
               </label>
