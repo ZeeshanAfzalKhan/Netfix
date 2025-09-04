@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { validateSignIn, validateSignUp } from "../utils/validate";
 import FloatingInput from "./FloatingInput";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Auth = ({ mode }) => {
   const isSignIn = mode === "signin";
@@ -27,15 +29,45 @@ const Auth = ({ mode }) => {
       return;
     }
 
-    console.log("Form submitted successfully with data:");
+    if (isSignIn) {
+      // Handle sign-in logic here
 
-    console.log(authData);
+      signInWithEmailAndPassword(auth, authData?.email, authData?.password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          navigate("/browse");
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode + "-" + errorMessage);
+        });
+    } else {
+      // Handle sign-up logic here
+
+      createUserWithEmailAndPassword(auth, authData?.email, authData?.password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+          navigate("/browse");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode + "-" + errorMessage);
+          // ..
+        });
+    }
 
     setErrors({});
 
     setEmail("");
     setPassword("");
-    setFullName("")
+    setFullName("");
   };
 
   return (
@@ -47,14 +79,31 @@ const Auth = ({ mode }) => {
         <div className="text-white text-3xl font-bold mb-6">
           {isSignIn ? "Sign In" : "Sign Up"}
         </div>
-        <FloatingInput type={"email"} value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} label={"Email or Mobile Number"} />
-        
+        <FloatingInput
+          type={"email"}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email}
+          label={"Email or Mobile Number"}
+        />
 
         {!isSignIn && (
-          <FloatingInput type={"text"} value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} label={"Full Name"} />
+          <FloatingInput
+            type={"text"}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            error={errors.fullName}
+            label={"Full Name"}
+          />
         )}
 
-        <FloatingInput type={"password"} value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} label={"Password"} />
+        <FloatingInput
+          type={"password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
+          label={"Password"}
+        />
 
         <button className="bg-red-600 p-2 text-white rounded-sm font-semibold text-xl cursor-pointer hover:bg-red-700 transition-colors">
           {isSignIn ? "Sign In" : "Sign Up"}
