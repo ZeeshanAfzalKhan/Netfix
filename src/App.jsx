@@ -4,6 +4,8 @@ import Browse from './Components/Browse';
 import Layout from './Components/Layout';
 import { RouterProvider } from 'react-router';
 import Auth from './Components/Auth';
+import { Provider } from 'react-redux';
+import store from './Redux/store';
 
 function App() {
   
@@ -33,7 +35,9 @@ function App() {
 
   return (
    <>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+       <RouterProvider router={router} />
+    </Provider>
    </>
   )
 }

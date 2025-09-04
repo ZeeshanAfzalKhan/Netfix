@@ -4,6 +4,8 @@ import { validateSignIn, validateSignUp } from "../utils/validate";
 import FloatingInput from "./FloatingInput";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useDispatch } from "react-redux";
+import { setUser } from "../Redux/userSlice";
 
 const Auth = ({ mode }) => {
   const isSignIn = mode === "signin";
@@ -14,6 +16,7 @@ const Auth = ({ mode }) => {
   const [fullName, setFullName] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,6 +40,7 @@ const Auth = ({ mode }) => {
           // Signed in
           const user = userCredential.user;
           console.log(user);
+          dispatch(setUser(user));
           navigate("/browse");
           // ...
         })
@@ -53,6 +57,7 @@ const Auth = ({ mode }) => {
           // Signed up
           const user = userCredential.user;
           console.log(user);
+          dispatch(setUser(user));
           navigate("/browse");
         })
         .catch((error) => {
