@@ -1,13 +1,14 @@
-import { signOut } from "firebase/auth";
-import React from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { auth } from "../utils/firebase";
-import { clearUser } from "../Redux/userSlice";
+import { clearUser, setUser } from "../Redux/userSlice";
 
 const Header = () => {
   const naviagate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const user = useSelector((state) => state.user.user);
 
@@ -15,12 +16,36 @@ const Header = () => {
     signOut(auth)
       .then(() => {
         dispatch(clearUser());
-        naviagate("/");
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          setUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate("/browse");
+      } else {
+        dispatch(clearUser());
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  
 
   return (
     <div className="absolute px-16 pt-8 bg-gradient-to-b from-black w-full flex justify-between items-center p-4 z-50">

@@ -48,7 +48,6 @@ const Auth = ({ mode }) => {
             setUser({ uid: uid, email: email, displayName: displayName })
           );
           console.log(user);
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -70,7 +69,6 @@ const Auth = ({ mode }) => {
                 setUser({ uid: uid, email: email, displayName: displayName })
               );
               console.log(user);
-              navigate("/browse");
             })
             .catch((error) => {
               console.log("Profile update error:", error);
