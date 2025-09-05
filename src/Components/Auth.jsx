@@ -2,21 +2,25 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { validateSignIn, validateSignUp } from "../utils/validate";
 import FloatingInput from "./FloatingInput";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useDispatch } from "react-redux";
 import { setUser } from "../Redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const Auth = ({ mode }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const isSignIn = mode === "signin";
   const [errors, setErrors] = useState({});
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,10 +43,12 @@ const Auth = ({ mode }) => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
+          const { uid, email, displayName } = user;
+          dispatch(
+            setUser({ uid: uid, email: email, displayName: displayName })
+          );
           console.log(user);
-          dispatch(setUser(user));
           navigate("/browse");
-          // ...
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -54,17 +60,26 @@ const Auth = ({ mode }) => {
 
       createUserWithEmailAndPassword(auth, authData?.email, authData?.password)
         .then((userCredential) => {
-          // Signed up
-          const user = userCredential.user;
-          console.log(user);
-          dispatch(setUser(user));
-          navigate("/browse");
+          updateProfile(auth.currentUser, {
+            displayName: authData?.fullName,
+          })
+            .then(() => {
+              const user = userCredential.user;
+              const { uid, email, displayName } = user;
+              dispatch(
+                setUser({ uid: uid, email: email, displayName: displayName })
+              );
+              console.log(user);
+              navigate("/browse");
+            })
+            .catch((error) => {
+              console.log("Profile update error:", error);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode + "-" + errorMessage);
-          // ..
         });
     }
 
@@ -74,6 +89,7 @@ const Auth = ({ mode }) => {
     setPassword("");
     setFullName("");
   };
+
 
   return (
     <div className='w-full h-[700px] flex justify-center bg-[url("https://assets.nflxext.com/ffe/siteui/vlv3/cb72daa5-bd8d-408b-b949-1eaef000c377/web/IN-en-20250825-TRIFECTA-perspective_a3209894-0b01-4ddb-b57e-f32165e20a3f_large.jpg")] bg-cover'>
